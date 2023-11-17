@@ -1,4 +1,4 @@
-package com.herry.ifDome;
+package com.herry.week01;
 
 import java.util.Scanner;
 
