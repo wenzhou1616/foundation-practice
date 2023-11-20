@@ -1,8 +1,4 @@
-package com.herry.week01;
-
-import sun.rmi.runtime.Log;
-
-import java.util.*;
+package com.herry.week01.dome;
 
 /**
  * @author herry

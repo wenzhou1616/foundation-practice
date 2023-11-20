@@ -1,6 +1,4 @@
-package com.herry.week01.dome;
-
-import java.util.Arrays;
+package com.herry.week01.practice;
 
 /**
  * @author herry

@@ -1,6 +1,4 @@
-package com.herry.week01;
-
-import java.util.Scanner;
+package com.herry.week01.dome;
 
 /**
  * @author Administrator

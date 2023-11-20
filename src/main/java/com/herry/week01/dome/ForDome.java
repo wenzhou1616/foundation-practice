@@ -1,4 +1,4 @@
-package com.herry.week01;
+package com.herry.week01.dome;
 
 /**
  * @author herry
