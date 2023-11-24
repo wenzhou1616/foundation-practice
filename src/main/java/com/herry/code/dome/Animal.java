@@ -1,4 +1,4 @@
-package com.herry.week01.dome;
+package com.herry.code.dome;
 
 public class Animal {
     public String name = "animal";

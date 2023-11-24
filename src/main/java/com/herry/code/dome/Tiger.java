@@ -1,4 +1,4 @@
-package com.herry.week01.dome;
+package com.herry.code.dome;
 
 public class Tiger extends Animal {
     public String name = "tiger";

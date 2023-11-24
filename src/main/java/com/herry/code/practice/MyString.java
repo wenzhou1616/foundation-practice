@@ -1,4 +1,4 @@
-package com.herry.week01.practice;
+package com.herry.code.practice;
 
 /**
  * @author herry
