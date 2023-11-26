@@ -144,23 +144,22 @@ public class Test {
 //                                           .collect(Collectors.toList());
 //        System.out.println(evenNumbers); // 输出：[2, 4, 6, 8, 10]
 
-        List<Integer> list = Arrays.asList(3, 1, 4, 2, 5);
-        List<Integer> result = list.stream().sorted().collect(Collectors.toList());
-        System.out.println(result);
+//        List<Integer> list = Arrays.asList(3, 1, 4, 2, 5);
+//        List<Integer> result = list.stream().sorted().collect(Collectors.toList());
+//        System.out.println(result);
+
+        HashMap map = new HashMap();
+        map.put(1,11);
+        map.put(2,22);
+        map.put(3,33);
+        map.put(4,44);
+
+        map.put(19,1919);
+        System.out.println(map);
 
     }
 
-    public static <T> List<T> deepCopy(List<T> src) throws IOException, ClassNotFoundException {
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(byteOut);
-        out.writeObject(src);
 
-        ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-        ObjectInputStream in = new ObjectInputStream(byteIn);
-        @SuppressWarnings("unchecked")
-        List<T> dest = (List<T>) in.readObject();
-        return dest;
-    }
 
 }
 
