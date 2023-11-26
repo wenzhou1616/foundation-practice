@@ -148,14 +148,6 @@ public class Test {
 //        List<Integer> result = list.stream().sorted().collect(Collectors.toList());
 //        System.out.println(result);
 
-        HashMap map = new HashMap();
-        map.put(1,11);
-        map.put(2,22);
-        map.put(3,33);
-        map.put(4,44);
-
-        map.put(19,1919);
-        System.out.println(map);
 
     }
 

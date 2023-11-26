@@ -3,7 +3,7 @@ package com.herry.code.practice;
 /**
  * @author herry
  */
-public class MyString {
+public final class MyString {
     private final char[] data;
 
     public MyString(String str) {
@@ -31,6 +31,9 @@ public class MyString {
      * 字符串拼接，拼接到末尾
      */
     public MyString concat(MyString str) {
+        if (str == null) {
+            throw new NullPointerException("str is null");
+        }
         // 创建一个新数组，然后将原来的数组和新的数组复制进去
         char[] newData = new char[data.length + str.length()];
         System.arraycopy(data, 0, newData, 0, data.length);
