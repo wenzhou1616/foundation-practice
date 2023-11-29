@@ -10,7 +10,9 @@ public class People implements Cloneable, Serializable {
     private String name;
     private int age;
     private Work work;
-    public int[] a = {1,2,3};
+
+    public People() {
+    }
 
     public People(String name, int age) {
         this.name = name;
@@ -37,9 +39,7 @@ public class People implements Cloneable, Serializable {
         return "People{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
-                ", work=" + work +
-                ", a=" + Arrays.toString(a) +
-                '}';
+                ", work=" + work;
     }
 
     public int getAge() {
@@ -70,9 +70,5 @@ public class People implements Cloneable, Serializable {
         this.name = name;
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
 
 }
