@@ -1,16 +1,9 @@
-package com.herry.code.practice;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+package com.herry.code.practice.week03;
+import com.google.errorprone.annotations.Var;
+import net.sf.cglib.proxy.MethodInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 
 /**
@@ -21,13 +14,12 @@ public class TableManagerTest {
 
     public static void main(String[] args) {
         TableManager tableManager = new TableManager();
+        tableManager.writeExcel("table02.xlsx","dddd");
 //        List<TableManager.RowData> rowData = tableManager.readExcel("table01.xlsx");
         MyMethodInterceptor myMethodInterceptor = new MyMethodInterceptor(tableManager);
         TableManager proxyTableManager = (TableManager)myMethodInterceptor.getProxy();
         List<TableManager.RowData> rowData = proxyTableManager.readExcel("table01.xlsx");
-        for (TableManager.RowData rowDatum : rowData) {
-            System.out.println(rowDatum);
-        }
+        rowData.forEach(System.out::println);
 
     }
 }

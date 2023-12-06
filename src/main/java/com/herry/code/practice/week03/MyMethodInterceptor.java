@@ -1,4 +1,4 @@
-package com.herry.code.practice;
+package com.herry.code.practice.week03;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
  */
 public class MyMethodInterceptor implements MethodInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(TableManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyMethodInterceptor.class);
 
     private final Enhancer enhancer = new Enhancer();
 

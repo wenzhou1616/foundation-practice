@@ -1,9 +1,8 @@
-package com.herry.code.practice;
+package com.herry.code.practice.week03;
 
-import com.herry.code.dome.Work;
+import com.herry.code.practice.common.BusinessException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 操作表格
@@ -39,32 +39,24 @@ public class TableManager {
             throw new BusinessException("不是表格，文件格式有误");
         }
 
-        // 创建工作簿对象
-        Workbook workbook = new XSSFWorkbook();
+        try (Workbook workbook = new XSSFWorkbook();
+             FileOutputStream fos = new FileOutputStream(filePath)) {
+            // 创建工作表对象
+            Sheet sheet = workbook.createSheet("Sheet1");
 
-        // 创建工作表对象
-        Sheet sheet = workbook.createSheet("Sheet1");
+            // 写入数据到单元格
+            Row row = sheet.createRow(0);
+            Cell cell = row.createCell(0);
+            cell.setCellValue(data);
 
-        // 写入数据到单元格
-        Row row = sheet.createRow(0);
-        Cell cell = row.createCell(0);
-        cell.setCellValue(data);
-
-        // 保存工作簿到文件
-        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            // 保存工作簿到文件
             workbook.write(fos);
             System.out.println("Excel文件写入成功！");
         } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            // 关闭工作簿
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                logger.error("工作薄关闭失败", e);
-            }
+            logger.error("Excel文件写入失败", e);
         }
     }
+
 
     /**
      * 从表格读取数据
@@ -74,8 +66,10 @@ public class TableManager {
         try (FileInputStream fis = new FileInputStream(filePath);
              Workbook workbook = new XSSFWorkbook(fis)) {
             Sheet sheet = workbook.getSheetAt(0);
+
             for (Row row : sheet) {
                 RowData rowData = new RowData();
+
                 for (Cell cell : row) {
                     switch (cell.getCellType()) {
                         case STRING:
