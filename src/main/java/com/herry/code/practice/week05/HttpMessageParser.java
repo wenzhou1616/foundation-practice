@@ -3,19 +3,21 @@ package com.herry.code.practice.week05;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * http协议解析器
- *
- * Created by @author yihui in 11:35 18/12/30.
+ * HTTP协议解析器
+ * @author herry
  */
 @Slf4j
 public class HttpMessageParser {
-
     @Data
     public static class Request {
         /**
@@ -27,7 +29,7 @@ public class HttpMessageParser {
          */
         private String uri;
         /**
-         * http版本
+         * HTTP版本
          */
         private String version;
 
@@ -37,49 +39,43 @@ public class HttpMessageParser {
         private Map<String, String> headers;
 
         /**
-         * 请求参数相关
+         * 请求体
          */
         private String message;
     }
 
+    /**
+     * Response 类表示一个 HTTP 响应，包括版本、状态码、状态信息、响应头和响应体。
+     */
     @Data
     public static class Response {
+        /**
+         * HTTP版本
+         */
         private String version;
+        /**
+         * 响应状态码
+         */
         private int code;
+        /**
+         * 响应状态
+         */
         private String status;
-
+        /**
+         * 响应头
+         */
         private Map<String, String> headers;
-
+        /**
+         * 响应体
+         */
         private String message;
     }
 
     /**
-     * http的请求可以分为三部分
+     * 根据标准的HTTP协议，解析请求行
      *
-     * 第一行为请求行: 即 方法 + URI + 版本
-     * 第二部分到一个空行为止，表示请求头
-     * 空行
-     * 第三部分为接下来所有的，表示发送的内容,message-body；其长度由请求头中的 Content-Length 决定
-     *
-     * 几个实例如下
-     *
-     * @param reqStream
-     * @return
-     */
-    public static Request parse2request(InputStream reqStream) throws IOException {
-        BufferedReader httpReader = new BufferedReader(new InputStreamReader(reqStream, "UTF-8"));
-        Request httpRequest = new Request();
-        decodeRequestLine(httpReader, httpRequest);
-        decodeRequestHeader(httpReader, httpRequest);
-        decodeRequestMessage(httpReader, httpRequest);
-        return httpRequest;
-    }
-
-    /**
-     * 根据标准的http协议，解析请求行
-     *
-     * @param reader
-     * @param request
+     * @param reader 读取请求头的 BufferedReader 对象
+     * @param request 存储请求信息的 Request 对象
      */
     private static void decodeRequestLine(BufferedReader reader, Request request) throws IOException {
         String[] strs = StringUtils.split(reader.readLine(), " ");
@@ -90,90 +86,133 @@ public class HttpMessageParser {
     }
 
     /**
-     * 根据标准http协议，解析请求头
+     * 根据标准 HTTP 协议，解析请求头
      *
-     * @param reader
-     * @param request
-     * @throws IOException
+     * @param reader  读取请求头的 BufferedReader 对象
+     * @param request 存储请求信息的 Request 对象
+     * @throws IOException 当读取请求头信息时发生 I/O 异常时，将抛出该异常
      */
     private static void decodeRequestHeader(BufferedReader reader, Request request) throws IOException {
+        // 创建一个 Map 对象，用于存储请求头信息
         Map<String, String> headers = new HashMap<>(16);
+        // 读取请求头信息，每行都是一个键值对，以空行结束
         String line = reader.readLine();
         String[] kv;
         while (!"".equals(line)) {
+            // 将每行请求头信息按冒号分隔，分别作为键和值存入 Map 中
             kv = StringUtils.split(line, ":");
             assert kv.length == 2;
-            headers.put(kv[0].trim().toLowerCase(), kv[1].trim());
+            headers.put(kv[0].trim(), kv[1].trim());
             line = reader.readLine();
         }
-
+        // 将解析出来的请求头信息存入 Request 对象中
         request.setHeaders(headers);
-        if (log.isDebugEnabled()) {
-            log.info("request header: {}", headers);
-        }
     }
 
     /**
-     * 根据标注http协议，解析正文
+     * 根据标注HTTP协议，解析正文
      *
-     * @param reader
-     * @param request
-     * @throws IOException
+     * @param reader    输入流读取器，用于读取请求中的数据
+     * @param request   Request 对象，表示 HTTP 请求
+     * @throws IOException 当发生 I/O 错误时抛出
      */
     private static void decodeRequestMessage(BufferedReader reader, Request request) throws IOException {
-        int contentLen = Integer.parseInt(request.getHeaders().getOrDefault("content-length", "-1"));
-        if (contentLen > 0) {
-            char[] message = new char[contentLen];
-            reader.read(message);
-            request.setMessage(new String(message));
+        // 从请求头中获取 Content-Length，如果没有，则默认为 0
+        int contentLen = Integer.parseInt(request.getHeaders().getOrDefault("Content-Length", "0"));
+
+        // 如果 Content-Length 为 0，表示没有请求正文，直接返回
+        if (contentLen == 0) {
             return;
         }
 
-        // 如get/options请求就没有message
-        // 表示没有message，直接返回
-        if (contentLen == -1) {
-            return;
-        }
+        // 根据 Content-Length 创建一个字符数组来存储请求正文
+        char[] message = new char[contentLen];
 
-        // fixme 这种时候，可能是通过 chunked 方式发送数据，待验证这种支持方式是否准确
-        StringBuilder message = new StringBuilder();
-        int ch;
-        while (reader.ready()) {
-            ch = reader.read();
-            if (ch <= 0) {
-                break;
-            }
-            message.append((char) ch);
-        }
-        request.setMessage(message.toString());
+        // 使用 BufferedReader 读取请求正文
+        reader.read(message);
+
+        // 将字符数组转换为字符串，并将其设置为 Request 对象的 message
+        request.setMessage(new String(message));
     }
 
-    public static String buildResponse(Request request, String response) {
+    /**
+     * 将 InputStream 中的 HTTP 请求数据解析为一个 Request 对象
+     *
+     * @param reqStream  包含 HTTP 请求数据的输入流
+     * @return           一个表示 HTTP 请求的 Request 对象
+     * @throws IOException 当发生 I/O 错误时抛出
+     */
+    public static Request parse2request(InputStream reqStream) throws IOException {
+        // 使用 BufferedReader 和 InputStreamReader 读取输入流中的数据
+        BufferedReader httpReader = new BufferedReader(new InputStreamReader(reqStream, StandardCharsets.UTF_8));
+
+        // 创建一个新的 Request 对象
+        Request httpRequest = new Request();
+
+        // 解析请求行并设置到 Request 对象中
+        decodeRequestLine(httpReader, httpRequest);
+
+        // 解析请求头并设置到 Request 对象中
+        decodeRequestHeader(httpReader, httpRequest);
+
+        // 解析消息正文并设置到 Request 对象中
+        decodeRequestMessage(httpReader, httpRequest);
+
+        // 返回解析后的 Request 对象
+        return httpRequest;
+    }
+
+    /**
+     * 根据给定的 Request 对象和响应字符串构建一个 HTTP 响应
+     *
+     * @param request   用于构建响应的 Request 对象
+     * @param message  响应字符串
+     * @return          一个表示 HTTP 响应的字符串
+     */
+    public static String buildResponse(Request request, String message, InetAddress inetAddress) {
+        // 创建一个新的 Response 对象，并设置版本、状态码和状态信息
         Response httpResponse = new Response();
         httpResponse.setCode(200);
         httpResponse.setStatus("ok");
         httpResponse.setVersion(request.getVersion());
 
+        // 设置响应头
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Content-Length", String.valueOf(response.getBytes().length));
+        headers.put("Content-Length", String.valueOf(message.getBytes().length));
         httpResponse.setHeaders(headers);
 
-        httpResponse.setMessage(response);
+        // 设置响应正文
+        httpResponse.setMessage(message);
 
+        // 构建响应字符串
         StringBuilder builder = new StringBuilder();
         buildResponseLine(httpResponse, builder);
         buildResponseHeaders(httpResponse, builder);
         buildResponseMessage(httpResponse, builder);
+
+        // 记录访问日志
+        log.info(inetAddress + request.uri + " 状态：" + httpResponse.getStatus());
         return builder.toString();
     }
 
-
+    /**
+     * 构建响应行，包括版本、状态码和状态信息。
+     *
+     * @param response      用于构建响应行的 Response 对象
+     * @param stringBuilder 用于拼接响应字符串的 StringBuilder 对象
+     */
     private static void buildResponseLine(Response response, StringBuilder stringBuilder) {
         stringBuilder.append(response.getVersion()).append(" ").append(response.getCode()).append(" ")
                 .append(response.getStatus()).append("\n");
     }
 
+    /**
+     * 构建响应头
+     *
+     * @param response      用于构建响应头的 Response 对象
+     * @param stringBuilder 用于拼接响应字符串的 StringBuilder 对象
+     */
     private static void buildResponseHeaders(Response response, StringBuilder stringBuilder) {
         for (Map.Entry<String, String> entry : response.getHeaders().entrySet()) {
             stringBuilder.append(entry.getKey()).append(":").append(entry.getValue()).append("\n");
@@ -181,6 +220,12 @@ public class HttpMessageParser {
         stringBuilder.append("\n");
     }
 
+    /**
+     * 构建响应正文。
+     *
+     * @param response      用于构建响应正文的 Response 对象
+     * @param stringBuilder 用于拼接响应字符串的 StringBuilder 对象
+     */
     private static void buildResponseMessage(Response response, StringBuilder stringBuilder) {
         stringBuilder.append(response.getMessage());
     }

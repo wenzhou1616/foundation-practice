@@ -206,6 +206,9 @@ public class MyHashMap<K, V> {
         return null;
     }
 
+    /**
+     * 打印哈希表
+     */
     @Override
     public String toString() {
         for (int i = 0; i < table.length; i++) {
