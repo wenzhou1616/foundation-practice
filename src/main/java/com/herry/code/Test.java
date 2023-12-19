@@ -12,9 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 public class Test {
-    public static void main(String[] args) throws MalformedURLException {
-        AtomicInteger counter = new AtomicInteger();
-        System.out.println(counter);
+    public static void main(String[] args) {
+        System.out.println("hello");
     }
 }
 
