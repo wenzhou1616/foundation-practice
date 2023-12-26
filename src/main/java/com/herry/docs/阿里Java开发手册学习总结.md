@@ -176,7 +176,295 @@ public class ResourceObserver;
 - 基本数据类型和包装类的使用标准：
   - 所有POJO类的属性必须用包装类。
   - RPC方法的返回值和参数必须使用包装类。
-  - 【推荐】所有的局部变量使用基本数据类型。
+  - 所有的局部变量使用基本数据类型。
+
+- 定义 DO/DTO/VO 等 POJO 类时，不要设定任何属性默认值。
+
+- 序列化类新增属性时，请不要修改 serialVersionUID 字段，避免反序列失败；如
+
+  果完全不兼容升级，避免反序列化混乱，那么请修改 serialVersionUID 值。
+
+- 构造方法不能有业务逻辑，如果有初始化逻辑，要放入init方法中。
+
+- POJO 类必须写 toString 方法。使用 IDE 中的工具：source> generate toString
+
+时，如果继承了另一个 POJO 类，注意在前面加一下 super.toString。
+
+- 禁止在 POJO 类中，同时存在对应属性 xxx 的 isXxx()和 getXxx()方法。
+
+说明：框架在调用属性 xxx 的提取方法时，并不能确定哪个方法一定是被优先调用到。
+
+- 使用索引访问用 String 的 split 方法得到的数组时，需做最后一个分隔符后有无
+
+内容的检查，否则会有抛 IndexOutOfBoundsException 的风险。
+
+- 类内方法定义的顺序依次是：公有方法或保护方法 > 私有方法 > getter/setter
+
+  方法，当一个类有多个构造方法，或者多个同名方法，这些方法应该按顺序放置在一起，
+
+  便于阅读。
+
+- setter 方法中，参数名称与类成员变量名称一致，this.成员名 = 参数名。在
+
+  getter/setter 方法中，不要增加业务逻辑，增加排查问题的难度。
+
+- 循环体内，使用 StringBuilder 的 append 方法进行字符串连接方式扩展。
+
+- final 可以声明类、成员变量、方法、以及本地变量，下列情况使用 final 关键字：
+
+  1） 不允许被继承的类，如：String 类。
+
+  2） 不允许修改引用的域对象。
+
+  3） 不允许被重写的方法，如：POJO 类的 setter 方法。
+
+  4） 不允许运行过程中重新赋值的局部变量。
+
+  5） 避免上下文重复使用一个变量，使用 final 描述可以强制重新定义一个变量，方便更好
+
+  地进行重构。
+
+- 慎用 Object 的 clone 方法来拷贝对象。
+
+  对象的 clone 方法默认是浅拷贝，若想实现深拷贝需要重写 clone 方法实现域对象的
+
+  深度遍历式拷贝。
+
+- 类成员与方法访问控制从严：
+
+  1） 如果不允许外部直接通过 new 来创建对象，那么构造方法必须是 private。
+
+  2） 工具类不允许有 public 或 default 构造方法。
+
+  3） 类非 static 成员变量并且与子类共享，必须是 protected。
+
+  4） 类非 static 成员变量并且仅在本类使用，必须是 private。
+
+  5） 类 static 成员变量如果仅在本类使用，必须是 private。
+
+  6） 若是 static 成员变量，考虑是否为 final。
+
+  7） 类成员方法只供类内部调用，必须是 private。
+
+  8） 类成员方法只对继承类公开，那么限制为 protected。
+
+## 集合处理
+
+- hashCode 和 equals ：
+
+  - 只要重写了 equals ，就必须重写hashCode
+  - Set存储的是不重复的对象，且是依据hashCode和equals进行判断，所以用Set存储的对象必须重写这两个方法。
+  - 自定义对象作为Map的键，必须重写hashCode和equals。
+
+  注：String重写了hashCode和equals，可以直接用。
+
+- SubList不能强转为ArrayList。
+
+- 在 subList 场景中，高度注意对原集合元素的增加或删除，均会导致子列表的遍历、
+
+  增加、删除产生 ConcurrentModificationException 异常。
+
+- 集合转数组用toArray(T[] array)，要传入类型一样的数组，生成的数组的大小是list.size()
+
+  正例：
+
+  ```java
+  List<String> list = new ArrayList<String>(2); 
+  list.add("guan"); 
+  list.add("bao"); 
+  String[] array = new String[list.size()]; 
+  array = list.toArray(array);
+  ```
+
+- 数组转集合：
+
+使用工具类 Arrays.asList()把数组转换成集合时，不能使用其修改集合相关的方
+
+法，它的 add/remove/clear 方法会抛出 UnsupportedOperationException 异常。
+
+说明：asList 的返回对象是一个 Arrays 内部类，并没有实现集合的修改方法。Arrays.asList
+
+体现的是适配器模式，只是转换接口，后台的数据仍是数组。
+
+ String[] str = new String[] { "you", "wu" };
+
+ List list = Arrays.asList(str);
+
+第一种情况：list.add("yangguanbao"); 运行时异常。
+
+第二种情况：str[0] = "gujin"; 那么 list.get(0)也会随之修改。
+
+- 不要在 foreach 循环里进行元素的 remove/add 操作。remove 元素请使用 Iterator
+
+  方式，如果并发操作，需要对 Iterator 对象加锁。
+
+  正例：
+
+  ```
+  List<String> list = new ArrayList<>(); 
+  list.add("1"); 
+  list.add("2"); 
+  Iterator<String> iterator = list.iterator(); 
+  while (iterator.hasNext()) { 
+  	String item = iterator.next(); 
+  	if (删除元素的条件) { 
+  		iterator.remove(); 
+  	} 
+  }
+  ```
+
+  反例：
+
+  ```
+  for (String item : list) { 
+  	if ("1".equals(item)) { 
+  		list.remove(item); 
+  	} 
+  }
+  ```
+
+- 在 JDK7 版本及以上，Comparator 实现类要满足如下三个条件，不然 Arrays.sort，
+
+  Collections.sort 会报 IllegalArgumentException 异常。
+
+  说明：三个条件如下
+
+  1） x，y 的比较结果和 y，x 的比较结果相反。
+
+  2） x>y，y>z，则 x>z。
+
+  3） x=y，则 x，z 比较结果和 y，z 比较结果相同。
+
+  反例：下例中没有处理相等的情况，实际使用中可能会出现异常：
+
+  ```
+  new Comparator<Student>() { 
+  	@Override 
+  	public int compare(Student o1, Student o2) { 
+  		return o1.getId() > o2.getId() ? 1 : -1; 
+  	} 
+  };
+  ```
+
+- 集合泛型定义时，在 JDK7 及以上，使用 diamond 语法或全省略。
+
+​	说明：菱形泛型，即 diamond，直接使用<>来指代前边已经指定的类型。
+
+​	正例：
+
+​	// <> diamond 方式
+
+​	HashMap<String, String> userCache = new HashMap<>(16);
+
+​	// 全省略方式
+
+​	ArrayList<User> users = new ArrayList(10); 
+
+- 集合初始化时，指定集合初始值大小。
+
+  说明：HashMap 使用 HashMap(int initialCapacity) 初始化。
+
+  正例：initialCapacity = (需要存储的元素个数 / 负载因子) + 1。注意负载因子（即 loader 
+
+  factor）默认为 0.75，如果暂时无法确定初始值大小，请设置为 16（即默认值）。
+
+  反例：HashMap 需要放置 1024 个元素，由于没有设置容量初始大小，随着元素不断增加，容
+
+  量 7 次被迫扩大，resize 需要重建 hash 表，严重影响性能。
+
+- 使用 entrySet 遍历 Map 类集合 KV，而不是 keySet 方式进行遍历。
+
+  说明：keySet 其实是遍历了 2 次，一次是转为 Iterator 对象，另一次是从 hashMap 中取出
+
+  key 所对应的 value。而 entrySet 只是遍历了一次就把 key 和 value 都放到了 entry 中，效
+
+  率更高。如果是 JDK8，使用 Map.foreach 方法。
+
+- 高度注意 Map 类集合 K/V 能不能存储 null 值的情况，如下表格：
+
+![image-20231226151703882](images/image-20231226151703882.png)
+
+- 合理利用好集合的有序性(sort)和稳定性(order)，避免集合的无序性(unsort)和
+
+不稳定性(unorder)带来的负面影响。
+
+说明：有序性是指遍历的结果是按某种比较规则依次排列的。稳定性指集合每次遍历的元素次
+
+序是一定的。如：ArrayList 是 order/unsort；HashMap 是 unorder/unsort；TreeSet 是
+
+order/sort。
+
+- 利用 Set 元素唯一的特性，可以快速对一个集合进行去重操作，避免使用 List 的
+
+  contains 方法进行遍历、对比、去重操作。
+
+# 单元测试
+
+- 单元测试要遵守AIR原则：
+
+  - **Automatic(自动化)**：单元测试要全自动执行，非交互式，因为单元测试要定期执行，自动化才有意义。单元测试不能用System.out一定要用assert。
+
+  - **Independent(独立性)**：单元测试之间不能相互依赖，也不能依赖先后顺序。
+
+  - **Repeatable(可重复)。**：单元测试要保证能重复执行，不受外界影响，否则可能会影响持续集成。为了不受外界的影响可以用依赖注入。
+
+- 单元测试的颗粒度一般在方法级别，最多是类级别。
+
+- 核心业务、核心应用、核心模块的增量代码确保单元测试通过。
+
+  新增代码及时补充单元测试，如果新增代码影响了原有单元测试，请及时修正。
+
+- 单元测试代码必须写在如下工程目录：src/test/java，不允许写在业务代码目录下。
+
+  说明：源码构建时会跳过此目录，而单元测试框架默认是扫描此目录。
+
+- 语句覆盖率达到 70%；核心模块的语句覆盖率和分支覆盖率都
+
+  要达到 100%。
+
+  在工程规约的应用分层中提到的 DAO 层，Manager 层，可重用度高的 Service，都应该进行单元测试。
+
+- 编写单元测试代码遵守 BCDE 原则，以保证被测试模块的交付质量。
+
+   B：Border，边界值测试，包括循环边界、特殊取值、特殊时间点、数据顺序等。
+
+   C：Correct，正确的输入，并得到预期的结果。
+
+   D：Design，与设计文档相结合，来编写单元测试。
+
+   E：Error，强制错误信息输入（如：非法数据、异常流程、非业务允许输入等），并得到预期的结果。
+
+- 对于数据库相关的查询，更新，删除等操作，不能假设数据库里的数据是存在的，
+
+  或者直接操作数据库把数据插入进去，请使用程序插入或者导入数据的方式来准备数据。
+
+- 和数据库相关的单元测试，可以设定自动回滚机制，不给数据库造成脏数据。或者
+
+  对单元测试产生的数据有明确的前后缀标识。
+
+  正例：在 RDC 内部单元测试中，使用 RDC_UNIT_TEST_的前缀标识数据。
+
+- 单元测试作为一种质量保障手段，不建议项目发布后补充单元测试用例，建议在项
+
+  目提测前完成单元测试。
+
+- 为了更方便地进行单元测试，业务代码应避免以下情况：
+
+   构造方法中做的事情过多。
+
+   存在过多的全局变量和静态方法。
+
+   存在过多的外部依赖。
+
+   存在过多的条件语句。
+
+  说明：多层条件语句建议使用卫语句、策略模式、状态模式等方式重构。
+
+
+
+
+
+
 
 
 
