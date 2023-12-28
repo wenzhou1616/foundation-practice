@@ -4,8 +4,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+
 /**
+ * 
+ *
  * @author herry
+ * @date 2023/12/13
  */
 public class UDPSend {
     public static void main(String[] args) {
