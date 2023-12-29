@@ -2,7 +2,6 @@ package com.herry.code.practice.week05;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.*;
@@ -13,7 +12,7 @@ import java.util.concurrent.*;
  * @author herry
  */
 @Slf4j
-public class BasicHttpServer {
+public class HttpServer {
     /**
      * 用于启动 HTTP 服务器的线程池
      */

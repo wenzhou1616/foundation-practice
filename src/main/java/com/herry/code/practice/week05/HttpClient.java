@@ -9,7 +9,7 @@ import java.net.Socket;
  * 测试模拟的 HTTP 服务器，客户端
  * @author herry
  */
-public class HTTPClient {
+public class HttpClient {
     public static void main(String[] args) throws IOException {
         // 创建客服端，连接服务端
         Socket socket = new Socket("127.0.0.1", 9000);
