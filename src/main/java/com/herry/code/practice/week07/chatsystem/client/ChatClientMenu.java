@@ -1,23 +1,19 @@
-package com.herry.code.practice.week07.chatSystem.client.start;
+package com.herry.code.practice.week07.chatsystem.client;
 
 
-import com.herry.code.practice.week07.chatSystem.client.service.FileClientService;
-import com.herry.code.practice.week07.chatSystem.client.service.MessageClientService;
-import com.herry.code.practice.week07.chatSystem.client.service.UserClientService;
-import java.io.IOException;
 import java.util.Scanner;
- 
+
 /**
  * 客户端菜单界面
  *
  * @author herry
  * @date 2023/12/26
  */
-public class View {
+public class ChatClientMenu {
     /**
      * 控制是否继续循环
      */
-    private boolean loop = true;
+    private static boolean loop = true;
 
     /**
      * 输入
@@ -25,37 +21,13 @@ public class View {
     private static Scanner sc = new Scanner(System.in);
 
     /**
-     * 用于执行登录
-     */
-    private UserClientService userClientService = new UserClientService();
-
-    /**
-     * 用于消息管理
-     */
-    private MessageClientService messageClientService = new MessageClientService();
-
-    /**
-     * 用于发送文件
-     */
-    private FileClientService fileClientService = new FileClientService();
-
-    /**
-     * 启动
-     */
-    public static void main(String[] args) throws IOException {
-        new View().mainMenu();
-        System.out.println("客户端退出...");
-        sc.close();
-    }
-    /**
      * 客户端菜单
      */
-    private void mainMenu() throws IOException {
+    public static void mainMenu() {
         while (loop) {
             System.out.println("===========Welcome to the system of chat:===========");
             System.out.println("\t\t1.登录系统");
             System.out.println("\t\t9.退出系统");
-
 
             System.out.print("请输入你的选择：");
             String key = sc.nextLine();
@@ -69,7 +41,7 @@ public class View {
                     String password = sc.nextLine();
 
                     // 验证登录的用户是否合法
-                    if (userClientService.check(userId, password)) {
+                    if (LoginOperation.check(userId, password)) {
                         // 验证成功
                         System.out.println("\n===========Welcome user " + userId + "===========");
                         // 向用户显示二级菜单
@@ -87,13 +59,13 @@ public class View {
                             switch (key) {
                                 case "1" :
                                     // 获取在线用户列表
-                                    userClientService.onlineList();
+                                    LoginOperation.onlineList(userId);
                                     break;
                                 case "2" :
                                     // 群发消息
                                     System.out.println("请输入你要对大家说的话：");
                                     String announcement = sc.nextLine();
-                                    messageClientService.sendMessageToAll(announcement, userId);
+                                    MessageOperation.sendMessageToAll(announcement, userId);
                                     break;
                                 case "3" :
                                     // 私发消息
@@ -101,7 +73,7 @@ public class View {
                                     String receiver = sc.nextLine();
                                     System.out.print("请输入你要说的话: ");
                                     String content = sc.nextLine();
-                                    messageClientService.sendMessageToOne(receiver, content, userId);
+                                    MessageOperation.sendMessageToOne(receiver, content, userId);
                                     break;
                                 case "4" :
                                     // 发送文件
@@ -111,12 +83,14 @@ public class View {
                                     String souPath = sc.nextLine();
                                     System.out.print("请输入目的地文件的路径, desPath = ");
                                     String desPath = sc.nextLine();
-                                    fileClientService.setFileToOne(souPath, desPath, userId, fileReceiver);
+                                    FileOperation.setFileToOne(souPath, desPath, userId, fileReceiver);
                                     break;
                                 case "9" :
                                     // 退出系统
-                                    userClientService.logout();
+                                    LoginOperation.logout(userId);
                                     loop = false;
+                                    break;
+                                default:
                                     break;
                             }
                         }
@@ -130,9 +104,11 @@ public class View {
                     // 退出系统
                     loop = false;
                     break;
+                default:
+                    break;
             }
         }
-
+        System.out.println("客户端退出...");
+        sc.close();
     }
-
 }

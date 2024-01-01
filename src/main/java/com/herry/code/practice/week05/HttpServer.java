@@ -59,7 +59,7 @@ public class HttpServer {
     }
 
     /**
-     * HTTP 服务器主要任务类
+     * HTTP 服务器线程
      */
     private static class ServerThread implements Runnable {
         /**
@@ -76,7 +76,7 @@ public class HttpServer {
         }
 
         /**
-         * 任务主体方法
+         * 线程执行的任务
          */
         @Override
         public void run() {

@@ -1,16 +1,19 @@
-package com.herry.code.practice.week07.chatSystem.client.service;
+package com.herry.code.practice.week07.chatsystem.client;
 
-import com.herry.code.practice.week07.chatSystem.common.Message;
-import com.herry.code.practice.week07.chatSystem.common.MessageType;
+import com.herry.code.practice.week07.chatsystem.common.Message;
+import com.herry.code.practice.week07.chatsystem.common.MessageType;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.ObjectOutputStream;
  
 /**
- * 发送消息
+ * 消息操作
  *
  * @author herry
  * @date 2023/12/26
  */
-public class MessageClientService {
+@Slf4j
+public class MessageOperation {
     /**
      * 私发消息
      *
@@ -18,7 +21,7 @@ public class MessageClientService {
      * @param content : 消息内容
      * @param sender : 消息的发送者
      */
-    public void sendMessageToOne(String receiver, String content, String sender) {
+    public static void sendMessageToOne(String receiver, String content, String sender) {
         Message message = new Message();
  
         message.setMesType(MessageType.MESSAGE_COMMON_MES);
@@ -26,15 +29,15 @@ public class MessageClientService {
         message.setContent(content);
         message.setSender(sender);
         message.setSendTime(new java.util.Date().toString());
-        System.out.println(sender + " 对 " + receiver + " 说 \"" + content + "\"");
- 
+
         try {
             // 获取发送消息的用户的输出流对象，并将上面的消息发给服务端
-            ClientConnectServiceThread clientConnectServiceThread = ControlClientConnectServiceThread.getClientConnectServiceThread(sender);
-            ObjectOutputStream oos = new ObjectOutputStream(clientConnectServiceThread.getSocket().getOutputStream());
+            ChatClientTask chatClientTask = ClientThreadManager.getClientConnectServiceThread(sender);
+            ObjectOutputStream oos = new ObjectOutputStream(chatClientTask.getSocket().getOutputStream());
             oos.writeObject(message);
+            System.out.println(sender + " 对 " + receiver + " 说 \"" + content + "\"");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("发送失败");
         }
     }
  
@@ -44,22 +47,21 @@ public class MessageClientService {
      * @param content : 群发消息的内容
      * @param sender : 群发消息的发送者
      */
-    public void sendMessageToAll(String content, String sender) {
+    public static void sendMessageToAll(String content, String sender) {
         Message message = new Message();
  
         message.setMesType(MessageType.MESSAGE_COMMON_MES_ALL);
         message.setContent(content);
         message.setSender(sender);
         message.setSendTime(new java.util.Date().toString());
-        System.out.println(sender + " 对所有在线的用户说 \"" + content + "\"");
- 
         try {
             // 获取发送消息的用户的输出流对象，并将上面的消息发给服务端
-            ClientConnectServiceThread clientConnectServiceThread = ControlClientConnectServiceThread.getClientConnectServiceThread(sender);
-            ObjectOutputStream oos = new ObjectOutputStream(clientConnectServiceThread.getSocket().getOutputStream());
+            ChatClientTask chatClientTask = ClientThreadManager.getClientConnectServiceThread(sender);
+            ObjectOutputStream oos = new ObjectOutputStream(chatClientTask.getSocket().getOutputStream());
             oos.writeObject(message);
+            System.out.println(sender + " 对所有在线的用户说 \"" + content + "\"");
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("发送失败");
         }
     }
 }

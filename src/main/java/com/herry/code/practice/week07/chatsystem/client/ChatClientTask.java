@@ -1,8 +1,7 @@
-package com.herry.code.practice.week07.chatSystem.client.service;
+package com.herry.code.practice.week07.chatsystem.client;
 
-
-import com.herry.code.practice.week07.chatSystem.common.Message;
-import com.herry.code.practice.week07.chatSystem.common.MessageType;
+import com.herry.code.practice.week07.chatsystem.common.Message;
+import com.herry.code.practice.week07.chatsystem.common.MessageType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileOutputStream;
@@ -10,17 +9,17 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
  
 /**
- * 接受服务端消息，进行相应操作
+ * 接收服务端的请求，展示响应内容
  *
  * @author herry
  * @date 2023/12/26
  */
 @Slf4j
-public class ClientConnectServiceThread extends Thread {
+public class ChatClientTask implements Runnable {
     private Socket socket;
     private boolean loop = true;
  
-    public ClientConnectServiceThread(Socket socket) {
+    public ChatClientTask(Socket socket) {
         this.socket = socket;
     }
 
@@ -44,7 +43,7 @@ public class ClientConnectServiceThread extends Thread {
                 // 判断客户端读取到的Message的类型，并做出相应的业务处理
                 switch (message.getMesType()) {
                     case MessageType.MESSAGE_RETURN_ONLINE_FRIENDS:
-                        // 返回在线用户列表
+                        // 展示在线用户列表
                         String[] onlineUsers = message.getContent().split(" ");
                         System.out.println("\n===========在线用户列表如下：===========");
                         for (String onlineUser : onlineUsers) {
@@ -52,22 +51,19 @@ public class ClientConnectServiceThread extends Thread {
                         }
                         break;
                     case MessageType.MESSAGE_COMMON_MES_ALL:
-                        // 对所有人发消息
                         System.out.println("\n" + message.getSender() + " 对所有在线的用户说 \"" +
                                 message.getContent() + "\"");
                         break;
                     case MessageType.MESSAGE_COMMON_MES:
-                        // 对某个人发消息
                         System.out.println("\n" + message.getSender() + " 对 " +
                                 message.getReceiver() + " 说 \"" + message.getContent() + "\"");
                         break;
                     case MessageType.MESSAGE_FILE_TRANSMISSION:
-                        // 接收文件
-                        System.out.println("\n" + message.getSender() + " 给 " + message.getReceiver() + " 发送 " +
-                                message.getSouPath() + " 到对方电脑的目录 " + message.getDesPath() + "下...");
                         FileOutputStream fileOutputStream = new FileOutputStream(message.getDesPath());
                         fileOutputStream.write(message.getFile());
                         fileOutputStream.close();
+                        System.out.println("\n" + message.getSender() + " 给 " + message.getReceiver() + " 发送 " +
+                                message.getSouPath() + " 到对方电脑的目录 " + message.getDesPath() + "下...");
                         System.out.println("\n保存文件成功！");
                         break;
                     default:

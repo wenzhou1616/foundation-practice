@@ -1,4 +1,4 @@
-package com.herry.code.practice.week07.chatSystem.common;
+package com.herry.code.practice.week07.chatsystem.common;
  
 import lombok.Data;
 
