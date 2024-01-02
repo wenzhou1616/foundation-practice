@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatServerTask implements Runnable {
     private Socket socket;
     private String userId;
- 
+
     public ChatServerTask(Socket socket, String userId) {
         this.socket = socket;
         this.userId = userId;
