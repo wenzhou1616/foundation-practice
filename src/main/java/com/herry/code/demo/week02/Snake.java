@@ -1,4 +1,4 @@
-package com.herry.code.demo.week02.week01;
+package com.herry.code.demo.week02;
 
 import com.herry.code.demo.week01.Animal;
 
