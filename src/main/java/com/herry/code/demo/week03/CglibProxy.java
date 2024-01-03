@@ -7,9 +7,11 @@ import net.sf.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 /**
+ * cglib 动态代理
+ *
  * @author herry
  */
-public class StudentMethodInterceptor implements MethodInterceptor {
+public class CglibProxy implements MethodInterceptor {
 
     private Object target;
 
@@ -21,12 +23,11 @@ public class StudentMethodInterceptor implements MethodInterceptor {
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         String name = method.getName();
-//        if (name.equals("wakeup")) {
-//            System.out.println("醒了");
-//        } else if (name.equals("sleep")) {
-//            System.out.println("睡了");
-//        }
-        System.out.println("hello");
+        if ("wakeup".equals(name)) {
+            System.out.println("醒了");
+        } else if ("sleep".equals(name)) {
+            System.out.println("睡了");
+        }
         return method.invoke(target, objects);
     }
 }

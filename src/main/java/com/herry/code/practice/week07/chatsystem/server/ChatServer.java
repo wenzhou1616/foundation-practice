@@ -53,9 +53,9 @@ public class ChatServer {
      */
     public static void startChatServer() {
         // 获取处理器可用核心数，用于设置线程池大小
-        int nThreads = Runtime.getRuntime().availableProcessors();
+        int threads = Runtime.getRuntime().availableProcessors();
         // 初始化线程池，设置线程池大小，队列大小和丢弃策略
-        serverTaskExecutor = new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
+        serverTaskExecutor = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>(100), new ThreadPoolExecutor.DiscardPolicy());
 
         // 循环尝试启动服务器，如果启动失败，则等待10秒后重试

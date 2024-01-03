@@ -2,27 +2,30 @@ package com.herry.code.demo.week03;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
+ * JDK动态代理
+ *
  * @author herry
  */
 public class JdkProxy implements InvocationHandler {
 
-    private Object bean;
+    private Object target;
 
-    public JdkProxy(Object bean) {
-        this.bean = bean;
+    public Object getProxyInstance(Object target) {
+        this.target = target;
+        return Proxy.newProxyInstance(target.getClass().getClassLoader(), target.getClass().getInterfaces(), this);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String name = method.getName();
-        if (name.equals("wakeup")) {
-            System.out.println("早安");
-        } else if (name.equals("sleep")){
-            System.out.println("晚安");
+        if ("wakeup".equals(name)) {
+            System.out.println("醒了");
+        } else if ("sleep".equals(name)) {
+            System.out.println("睡了");
         }
-
-        return method.invoke(bean, args);
+        return method.invoke(target, args);
     }
 }

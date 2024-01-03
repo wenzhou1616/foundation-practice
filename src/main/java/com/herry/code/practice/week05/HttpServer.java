@@ -33,9 +33,9 @@ public class HttpServer {
      */
     static void startHttpServer() {
         // 获取处理器可用核心数，用于设置线程池大小
-        int nThreads = Runtime.getRuntime().availableProcessors();
+        int threads = Runtime.getRuntime().availableProcessors();
         // 初始化线程池，设置线程池大小，队列大小和丢弃策略
-        taskExecutor = new ThreadPoolExecutor(nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
+        taskExecutor = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS,
             new LinkedBlockingQueue<>(100), new ThreadPoolExecutor.DiscardPolicy());
 
         // 循环尝试启动服务器，如果启动失败，则等待10秒后重试
@@ -91,7 +91,7 @@ public class HttpServer {
                     // 将 HttpTask 提交给 taskExecutor 执行
                     taskExecutor.submit(eventTask);
                 } catch (Exception e) {
-                    log.error("服务端出现异常");
+                    log.error("服务器出现异常");
                     try {
                         // 如果发生异常，等待 1 秒后继续尝试
                         TimeUnit.SECONDS.sleep(1);

@@ -1,4 +1,4 @@
-package com.herry.code.practice.week08.rpc;
+package com.herry.code.practice.week08.rpc.server.old;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,24 +11,32 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ServiceCenter implements Server {
+/**
+ * 服务中心，将服务发布成远程服务，供消费者使用
+ *
+ * @author herry
+ * @date 2024/1/3
+ */
+public class ServiceCenterImpl implements ServerCenter {
     private static ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private static final HashMap<String, Class> serviceRegistry = new HashMap<>();
     private static boolean isRunning = false;
     private static int port;
-    public ServiceCenter(int port) {
 
-        this.port = port;
-
+    public ServiceCenterImpl(int port) {
+        ServiceCenterImpl.port = port;
     }
+
+    @Override
     public void stop() {
-
         isRunning = false;
-
         executor.shutdown();
-
     }
 
+    /**
+     * 开启服务端
+     * @throws IOException
+     */
     public void start() throws IOException {
         ServerSocket server = new ServerSocket();
         server.bind(new InetSocketAddress(port));
@@ -48,15 +56,11 @@ public class ServiceCenter implements Server {
     }
 
     public boolean isRunning() {
-
         return isRunning;
-
     }
 
     public int getPort() {
-
         return port;
-
     }
 
     private static class ServiceTask implements Runnable {
@@ -66,6 +70,10 @@ public class ServiceCenter implements Server {
             this.clent = client;
         }
 
+        /**
+         * 接收客户端的请求，用反射调用方法，将结果发送给客户端
+         */
+        @Override
         public void run() {
             ObjectInputStream input = null;
             ObjectOutputStream output = null;

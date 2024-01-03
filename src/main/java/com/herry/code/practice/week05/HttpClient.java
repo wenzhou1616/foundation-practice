@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 /**
- * 测试模拟的 HTTP 服务器，客户端
+ * 客户端，测试模拟的 HTTP 服务器
  * @author herry
  */
 public class HttpClient {
