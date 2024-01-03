@@ -1,6 +1,6 @@
 package com.herry.code.practice.week08.rpc;
 
-import com.herry.code.practice.week08.rpc.consumer.RpcClient;
+import com.herry.code.practice.week08.rpc.client.RpcClient;
 import com.herry.code.practice.week08.rpc.server.HelloService;
 import com.herry.code.practice.week08.rpc.server.RpcServer;
 
@@ -20,7 +20,7 @@ public class RPCTest {
 //                }
 //            }
 //        }).start();
-        RpcServer.staterRpcServer();
+//        RpcServer.staterRpcServer();
         HelloService service = RpcClient.getRemoteProxyObj(HelloService.class,
                 new InetSocketAddress("localhost", 9000));
         System.out.println(service.sayHi("test"));

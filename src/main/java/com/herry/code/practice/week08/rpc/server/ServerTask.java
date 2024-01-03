@@ -1,10 +1,12 @@
 package com.herry.code.practice.week08.rpc.server;
 
+import com.herry.code.practice.week08.rpc.common.Message;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +27,7 @@ public class ServerTask implements Runnable{
     /**
      * 保存登记的服务
      */
-    private static ConcurrentHashMap<String, Class> serviceRegistry = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, Class<?>> serviceRegistry = new ConcurrentHashMap<>();
 
     /**
      * 构造函数
@@ -51,16 +53,24 @@ public class ServerTask implements Runnable{
         try {
             // 2.将客户端发送的码流反序列化成对象，反射调用服务实现者，获取执行结果
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-            String serviceName = input.readUTF();
-            String methodName = input.readUTF();
-            Class<?>[] parameterTypes = (Class<?>[]) input.readObject();
-            Object[] arguments = (Object[]) input.readObject();
-            Class serviceClass = serviceRegistry.get(serviceName);
+//            String serviceName = input.readUTF();
+//            String methodName = input.readUTF();
+//            Class<?>[] parameterTypes = (Class<?>[]) input.readObject();
+//            Object[] arguments = (Object[]) input.readObject();
+
+            Message message = (Message) input.readObject();
+            String serviceName = message.getClassName();
+            String methodName = message.getMethodName();
+            Class<?>[] parameterTypes = message.getParameterTypes();
+            Object[] arguments = message.getArgs();
+
+            Class<?> serviceClass = serviceRegistry.get(serviceName);
             if (serviceClass == null) {
                 throw new ClassNotFoundException(serviceName + " not found");
             }
             Method method = serviceClass.getMethod(methodName, parameterTypes);
-            Object result = method.invoke(serviceClass.newInstance(), arguments);
+            Constructor<?> constructor = serviceClass.getConstructor();
+            Object result = method.invoke(constructor.newInstance(), arguments);
 
             // 3.将执行结果反序列化，通过socket发送给客户端
             ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
