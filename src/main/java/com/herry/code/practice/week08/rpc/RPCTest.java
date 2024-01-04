@@ -2,7 +2,6 @@ package com.herry.code.practice.week08.rpc;
 
 import com.herry.code.practice.week08.rpc.client.RpcClient;
 import com.herry.code.practice.week08.rpc.server.HelloService;
-import com.herry.code.practice.week08.rpc.server.RpcServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -24,5 +23,7 @@ public class RPCTest {
         HelloService service = RpcClient.getRemoteProxyObj(HelloService.class,
                 new InetSocketAddress("localhost", 9000));
         System.out.println(service.sayHi("test"));
+
+//        Attempted to serialize java.lang.Class: java.lang.String. Forgot to register a type adapter?
     }
 }

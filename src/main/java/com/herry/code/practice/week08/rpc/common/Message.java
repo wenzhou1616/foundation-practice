@@ -14,7 +14,7 @@ public class Message implements Serializable {
 
     private String methodName;
 
-    private Class<?>[] parameterTypes;
+    private Class[] parameterTypes;
 
     private Object[] args;
 }
