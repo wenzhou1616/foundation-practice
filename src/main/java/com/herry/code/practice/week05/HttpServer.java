@@ -91,7 +91,7 @@ public class HttpServer {
                     // 将 HttpTask 提交给 taskExecutor 执行
                     taskExecutor.submit(eventTask);
                 } catch (Exception e) {
-                    log.error("服务器出现异常");
+                    log.error("服务器出现异常", e);
                     try {
                         // 如果发生异常，等待 1 秒后继续尝试
                         TimeUnit.SECONDS.sleep(1);

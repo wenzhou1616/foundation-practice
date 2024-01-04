@@ -83,13 +83,13 @@ public class HttpTask implements Runnable {
             // 刷新输出流，确保响应消息被发送
             out.flush();
         } catch (IOException e) {
-            log.error("处理HTTP请求出现异常");
+            log.error("处理HTTP请求出现异常", e);
         } finally {
             // 关闭 Socket 连接
             try {
                 socket.close();
             } catch (IOException e) {
-                log.error("关闭 Socket 连接失败");
+                log.error("关闭 Socket 连接失败", e);
             }
         }
     }

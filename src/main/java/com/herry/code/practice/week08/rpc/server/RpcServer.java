@@ -93,7 +93,7 @@ public class RpcServer {
                     // 执行服务器任务
                     taskExecutor.submit(serverTask);
                 } catch (IOException e) {
-                    log.error("服务器出现异常");
+                    log.error("服务器出现异常", e);
                     try {
                         // 如果出现了异常，等待1秒重试
                         TimeUnit.SECONDS.sleep(1);

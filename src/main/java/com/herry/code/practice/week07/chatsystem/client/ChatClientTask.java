@@ -71,7 +71,7 @@ public class ChatClientTask implements Runnable {
                         break;
                 }
             } catch (Exception e) {
-                log.error("接收消息出错");
+                log.error("接收消息出错", e);
             }
         }
     }

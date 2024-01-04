@@ -62,7 +62,7 @@ public class LoginOperation {
                 socket.close();
             }
         } catch (Exception e) {
-            log.error("登录校验失败");
+            log.error("登录校验失败", e);
         }
         return result;
     }
@@ -82,7 +82,7 @@ public class LoginOperation {
                     getClientConnectServiceThread(userId).getSocket().getOutputStream());
             oos.writeObject(message);
         } catch (IOException e) {
-            log.error("获取在线用户列表失败");
+            log.error("获取在线用户列表失败", e);
         }
     }
 
@@ -104,7 +104,7 @@ public class LoginOperation {
             System.out.println(userId + " 退出系统...");
             System.exit(0);
         } catch (IOException e) {
-            log.error("退出失败");
+            log.error("退出失败", e);
         }
     }
 }

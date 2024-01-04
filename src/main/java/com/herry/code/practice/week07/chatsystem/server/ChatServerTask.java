@@ -90,7 +90,7 @@ public class ChatServerTask implements Runnable {
                         break;
                 }
             } catch (Exception e) {
-                log.error("处理请求出错");
+                log.error("处理请求出错", e);
             }
         }
     }

@@ -37,7 +37,7 @@ public class MessageOperation {
             oos.writeObject(message);
             System.out.println(sender + " 对 " + receiver + " 说 \"" + content + "\"");
         } catch (Exception e) {
-            log.error("发送失败");
+            log.error("发送失败", e);
         }
     }
  
@@ -61,7 +61,7 @@ public class MessageOperation {
             oos.writeObject(message);
             System.out.println(sender + " 对所有在线的用户说 \"" + content + "\"");
         } catch (Exception e) {
-            log.error("发送失败");
+            log.error("发送失败", e);
         }
     }
 }

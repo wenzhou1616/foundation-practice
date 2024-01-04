@@ -50,7 +50,7 @@ public class FileOperation {
             System.out.println("\n" + sender + " 给 " + receiver + " 发送 " + souPath +
                     " 到对方电脑的目录 " + desPath + " 下...");
         }  catch (IOException e) {
-            log.error("文件发送失败");
+            log.error("文件发送失败", e);
         }
     }
 }
