@@ -10,7 +10,6 @@ import java.lang.reflect.Proxy;
  * @author herry
  */
 public class JdkProxy implements InvocationHandler {
-
     private Object target;
 
     public Object getProxyInstance(Object target) {
@@ -23,8 +22,6 @@ public class JdkProxy implements InvocationHandler {
         String name = method.getName();
         if ("wakeup".equals(name)) {
             System.out.println("醒了");
-        } else if ("sleep".equals(name)) {
-            System.out.println("睡了");
         }
         return method.invoke(target, args);
     }

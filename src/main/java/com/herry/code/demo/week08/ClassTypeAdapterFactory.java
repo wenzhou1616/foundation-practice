@@ -1,9 +1,10 @@
-package com.herry.code.practice.week08.rpc.common;
+package com.herry.code.demo.week08;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
+import com.herry.code.demo.week08.ClassTypeAdapter;
 
 public class ClassTypeAdapterFactory implements TypeAdapterFactory {
     @Override

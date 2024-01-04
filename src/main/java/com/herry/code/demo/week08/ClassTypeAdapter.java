@@ -1,4 +1,4 @@
-package com.herry.code.practice.week08.rpc.common;
+package com.herry.code.demo.week08;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
