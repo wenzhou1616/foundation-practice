@@ -53,6 +53,7 @@ public class ServerTask implements Runnable{
         try {
             // 解析客户端发的请求
             ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+
             Message message = (Message) input.readObject();
             String serviceName = message.getClassName();
             String methodName = message.getMethodName();

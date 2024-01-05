@@ -1,10 +1,5 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.herry.code.demo.week01.Animal;
-import com.herry.code.practice.week08.rpc.common.Message;
-
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author herry
@@ -12,16 +7,13 @@ import java.io.IOException;
 public class Test {
     @org.junit.Test
     public void test01() throws IOException {
-        Animal animal = new Animal();
-        ObjectMapper objectMapper = new ObjectMapper();
-        // 序列化
-        String json = objectMapper.writeValueAsString(animal);
-        System.out.println(json);
-
-        // 反序列化
-        Animal animal1 = objectMapper.readValue(json, Animal.class);
-        System.out.println(animal1);
-
+        int[] a = {1,2,3,4};
+        int[] b = Arrays.copyOf(a, a.length);
+        System.out.println(Arrays.toString(a));
+        System.out.println(Arrays.toString(b));
+        b[0] = 123;
+        System.out.println(Arrays.toString(a));
+        System.out.println(Arrays.toString(b));
 
     }
 }
